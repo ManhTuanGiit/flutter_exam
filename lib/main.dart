@@ -61,6 +61,9 @@ class Booking {
 // Global list để lưu bookings (trong app thực tế dùng database)
 List<Booking> allBookings = [];
 
+// Global set để lưu favorite destination IDs
+Set<String> favoriteDestinationIds = {};
+
 // ==================== HARDCODED DATA ====================
 /// Dữ liệu mẫu 10 địa điểm du lịch được hardcode
 final List<Destination> allDestinations = [
@@ -268,6 +271,7 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
   String _searchQuery = '';
   final Set<String> _selectedCategories = {};
   String _sortOption = 'Name A-Z'; // Options: Name A-Z, Name Z-A, Rating High to Low, Price Low to High
+  bool _showOnlyFavorites = false; // Filter để chỉ hiển thị favorites
 
   // Tất cả các categories có thể có
   final List<String> _allCategories = [
@@ -280,7 +284,7 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
   ];
 
   /// Logic lọc và sắp xếp destinations
-  /// Search -> Filter (AND logic) -> Sort
+  /// Search -> Filter (AND logic) -> Favorites -> Sort
   List<Destination> get _filteredAndSortedDestinations {
     // Tạo copy để không mutate list gốc
     List<Destination> results = List.from(allDestinations);
@@ -303,6 +307,13 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
         return _selectedCategories.every(
           (selectedCat) => destination.categories.contains(selectedCat)
         );
+      }).toList();
+    }
+
+    // 3. Apply favorites filter (nếu được bật)
+    if (_showOnlyFavorites) {
+      results = results.where((destination) {
+        return favoriteDestinationIds.contains(destination.id);
       }).toList();
     }
 
@@ -400,31 +411,74 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
             ),
           ),
 
-          // Category filter chips
+          // Category filter chips với Favorite button
           SizedBox(
             height: 50,
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: _allCategories.map((category) {
-                final isSelected = _selectedCategories.contains(category);
-                return Padding(
+              children: [
+                // Favorite filter button
+                Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(category),
-                    selected: isSelected,
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _showOnlyFavorites ? Icons.favorite : Icons.favorite_border,
+                          size: 18,
+                          color: _showOnlyFavorites ? Colors.red : null,
+                        ),
+                        const SizedBox(width: 4),
+                        const Text('Favorites'),
+                        if (favoriteDestinationIds.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4),
+                            child: CircleAvatar(
+                              radius: 10,
+                              backgroundColor: Colors.red,
+                              child: Text(
+                                '${favoriteDestinationIds.length}',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    selected: _showOnlyFavorites,
                     onSelected: (selected) {
                       setState(() {
-                        if (selected) {
-                          _selectedCategories.add(category);
-                        } else {
-                          _selectedCategories.remove(category);
-                        }
+                        _showOnlyFavorites = selected;
                       });
                     },
                   ),
-                );
-              }).toList(),
+                ),
+                // Category chips
+                ..._allCategories.map((category) {
+                  final isSelected = _selectedCategories.contains(category);
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text(category),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setState(() {
+                          if (selected) {
+                            _selectedCategories.add(category);
+                          } else {
+                            _selectedCategories.remove(category);
+                          }
+                        });
+                      },
+                    ),
+                  );
+                }).toList(),
+              ],
             ),
           ),
 
@@ -497,6 +551,9 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
                     itemBuilder: (context, index) {
                       return DestinationCard(
                         destination: destinations[index],
+                        onFavoriteToggle: () {
+                          setState(() {}); // Refresh để update UI
+                        },
                       );
                     },
                   );
@@ -510,6 +567,9 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
                         padding: const EdgeInsets.only(bottom: 16),
                         child: DestinationCard(
                           destination: destinations[index],
+                          onFavoriteToggle: () {
+                            setState(() {}); // Refresh để update UI
+                          },
                         ),
                       );
                     },
@@ -527,10 +587,12 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
 /// Widget hiển thị một địa điểm dưới dạng Card với UI đẹp hơn
 class DestinationCard extends StatelessWidget {
   final Destination destination;
+  final VoidCallback? onFavoriteToggle;
 
   const DestinationCard({
     super.key,
     required this.destination,
+    this.onFavoriteToggle,
   });
 
   @override
@@ -608,26 +670,46 @@ class DestinationCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Favorite icon badge
+                // Favorite button - có thể toggle trực tiếp
                 Positioned(
                   top: 12,
                   left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        final isFavorite = favoriteDestinationIds.contains(destination.id);
+                        if (isFavorite) {
+                          favoriteDestinationIds.remove(destination.id);
+                        } else {
+                          favoriteDestinationIds.add(destination.id);
+                        }
+                        // Trigger callback để parent refresh
+                        onFavoriteToggle?.call();
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.favorite_border,
-                      size: 20,
-                      color: Theme.of(context).colorScheme.primary,
+                        child: Icon(
+                          favoriteDestinationIds.contains(destination.id)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 20,
+                          color: favoriteDestinationIds.contains(destination.id)
+                              ? Colors.red
+                              : Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -756,8 +838,6 @@ class DestinationDetailScreen extends StatefulWidget {
 }
 
 class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
-  bool _isFavorite = false;
-
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -769,6 +849,9 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Đồng bộ favorite state từ global Set
+    final isFavorite = favoriteDestinationIds.contains(widget.destination.id);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.destination.name),
@@ -915,10 +998,14 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                         child: OutlinedButton.icon(
                           onPressed: () {
                             setState(() {
-                              _isFavorite = !_isFavorite;
+                              if (isFavorite) {
+                                favoriteDestinationIds.remove(widget.destination.id);
+                              } else {
+                                favoriteDestinationIds.add(widget.destination.id);
+                              }
                             });
                             _showSnackBar(
-                              _isFavorite
+                              !isFavorite
                                   ? 'Added to favorites!'
                                   : 'Removed from favorites',
                             );
@@ -931,8 +1018,8 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                             ),
                           ),
                           icon: Icon(
-                            _isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: _isFavorite ? Colors.red : null,
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : null,
                             size: 18,
                           ),
                           label: const Text(
