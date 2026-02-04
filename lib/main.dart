@@ -226,10 +226,12 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
   ];
 
   /// Logic lọc và sắp xếp destinations
+  /// Search -> Filter (AND logic) -> Sort
   List<Destination> get _filteredAndSortedDestinations {
-    List<Destination> results = allDestinations;
+    // Tạo copy để không mutate list gốc
+    List<Destination> results = List.from(allDestinations);
 
-    // 1. Apply search filter (case-insensitive)
+    // 1. Apply search filter (case-insensitive) - chạy trước
     if (_searchQuery.isNotEmpty) {
       results = results.where((destination) {
         final query = _searchQuery.toLowerCase();
@@ -239,12 +241,14 @@ class _DestinationListScreenState extends State<DestinationListScreen> {
       }).toList();
     }
 
-    // 2. Apply category filter (nếu có category được chọn)
+    // 2. Apply category filter với AND logic (chạy sau search)
+    // Destination phải chứa TẤT CẢ categories được chọn
     if (_selectedCategories.isNotEmpty) {
       results = results.where((destination) {
-        // Destination phải có ít nhất 1 category trong danh sách đã chọn
-        return destination.categories
-            .any((cat) => _selectedCategories.contains(cat));
+        // Sử dụng every thay vì any để kiểm tra tất cả categories đã chọn
+        return _selectedCategories.every(
+          (selectedCat) => destination.categories.contains(selectedCat)
+        );
       }).toList();
     }
 
@@ -701,9 +705,8 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
 
                   const SizedBox(height: 16),
 
-                  // Action buttons
+                  // Action buttons với style cố định để tránh text wrap
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
@@ -717,11 +720,24 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                                   : 'Removed from favorites',
                             );
                           },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 46),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
                           icon: Icon(
                             _isFavorite ? Icons.favorite : Icons.favorite_border,
                             color: _isFavorite ? Colors.red : null,
+                            size: 18,
                           ),
-                          label: const Text('Favorite'),
+                          label: const Text(
+                            'Favorite',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -730,8 +746,20 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                           onPressed: () {
                             _showSnackBar('Share feature coming soon!');
                           },
-                          icon: const Icon(Icons.share),
-                          label: const Text('Share'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 46),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(Icons.share, size: 18),
+                          label: const Text(
+                            'Share',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -740,8 +768,20 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                           onPressed: () {
                             _showSnackBar('Opening map...');
                           },
-                          icon: const Icon(Icons.map),
-                          label: const Text('Map'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 46),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(Icons.map, size: 18),
+                          label: const Text(
+                            'Map',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                          ),
                         ),
                       ),
                     ],
