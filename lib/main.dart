@@ -5,7 +5,7 @@ void main() {
 }
 
 // ==================== MODEL ====================
-/// Model class đại diện cho một địa điểm du lịch
+/// Model class đại diện cho một địa điểm du lịch với thông tin đầy đủ
 class Destination {
   final String id;
   final String name;
@@ -18,6 +18,19 @@ class Destination {
   final int avgCost; // Average cost per day in USD
   final String description;
   final List<String> activities;
+  
+  // Thông tin liên hệ
+  final String phoneNumber;
+  final String email;
+  final String address;
+  final String googleMapsUrl;
+  
+  // Thông tin chi tiết
+  final String openingHours;
+  final List<String> suitableFor; // Family, Couples, Solo travelers, Groups
+  final List<String> nearbyAttractions; // Các địa điểm gần đó
+  final Map<String, int> priceBreakdown; // {accommodation: 100, food: 50, activities: 30}
+  final List<String> facilities; // WiFi, Parking, Restaurant, etc.
 
   Destination({
     required this.id,
@@ -31,6 +44,15 @@ class Destination {
     required this.avgCost,
     required this.description,
     required this.activities,
+    required this.phoneNumber,
+    required this.email,
+    required this.address,
+    required this.googleMapsUrl,
+    required this.openingHours,
+    required this.suitableFor,
+    required this.nearbyAttractions,
+    required this.priceBreakdown,
+    required this.facilities,
   });
 }
 
@@ -65,11 +87,11 @@ List<Booking> allBookings = [];
 Set<String> favoriteDestinationIds = {};
 
 // ==================== HARDCODED DATA ====================
-/// Dữ liệu mẫu 10 địa điểm du lịch được hardcode
+/// Dữ liệu mẫu 10 địa điểm du lịch được hardcode với thông tin đầy đủ
 final List<Destination> allDestinations = [
   Destination(
     id: '1',
-    name: 'Bali Paradise Beach',
+    name: 'Bali Paradise Beach Resort',
     city: 'Bali',
     country: 'Indonesia',
     categories: ['Beach', 'Culture', 'Adventure'],
@@ -79,10 +101,19 @@ final List<Destination> allDestinations = [
     avgCost: 80,
     description: 'Bali is known for its stunning beaches, vibrant culture, and amazing surfing spots. Experience the perfect blend of relaxation and adventure in this tropical paradise.',
     activities: ['Surfing', 'Temple visits', 'Yoga retreats', 'Snorkeling', 'Traditional dance shows'],
+    phoneNumber: '+62 361 730361',
+    email: 'info@baliparadise.com',
+    address: 'Jl. Pantai Kuta No. 88, Kuta, Badung, Bali 80361, Indonesia',
+    googleMapsUrl: 'https://maps.google.com/?q=-8.718464,115.168876',
+    openingHours: '24/7 - Check-in: 2 PM, Check-out: 12 PM',
+    suitableFor: ['Couples', 'Families', 'Solo travelers'],
+    nearbyAttractions: ['Tanah Lot Temple (15 km)', 'Ubud Rice Terraces (25 km)', 'Seminyak Beach (5 km)'],
+    priceBreakdown: {'Accommodation': 50, 'Food & Drinks': 20, 'Activities': 10},
+    facilities: ['Free WiFi', 'Swimming Pool', 'Spa', 'Restaurant', 'Beach Access', 'Parking'],
   ),
   Destination(
     id: '2',
-    name: 'Swiss Alps Adventure',
+    name: 'Swiss Alps Mountain Lodge',
     city: 'Zermatt',
     country: 'Switzerland',
     categories: ['Mountain', 'Adventure'],
@@ -92,10 +123,19 @@ final List<Destination> allDestinations = [
     avgCost: 250,
     description: 'The Swiss Alps offer breathtaking mountain views, world-class skiing, and charming alpine villages. Perfect for adventure seekers and nature lovers.',
     activities: ['Skiing', 'Hiking', 'Mountain biking', 'Cable car rides', 'Alpine photography'],
+    phoneNumber: '+41 27 966 8100',
+    email: 'reservations@swissalpslodge.ch',
+    address: 'Bahnhofstrasse 55, 3920 Zermatt, Switzerland',
+    googleMapsUrl: 'https://maps.google.com/?q=46.020651,7.749117',
+    openingHours: 'Dec - Apr: 7 AM - 10 PM | May - Nov: 8 AM - 8 PM',
+    suitableFor: ['Adventure seekers', 'Families', 'Groups'],
+    nearbyAttractions: ['Matterhorn Peak (3 km)', 'Gornergrat Railway (2 km)', 'Glacier Paradise (8 km)'],
+    priceBreakdown: {'Accommodation': 180, 'Food & Drinks': 50, 'Ski Pass': 20},
+    facilities: ['Ski Storage', 'Sauna', 'Restaurant', 'WiFi', 'Mountain View', 'Ski-in/Ski-out'],
   ),
   Destination(
     id: '3',
-    name: 'Tokyo City Lights',
+    name: 'Tokyo City Experience Hotel',
     city: 'Tokyo',
     country: 'Japan',
     categories: ['City', 'Culture', 'Food'],
@@ -105,10 +145,19 @@ final List<Destination> allDestinations = [
     avgCost: 150,
     description: 'Tokyo is a vibrant metropolis blending traditional culture with cutting-edge technology. Explore ancient temples, modern skyscrapers, and incredible cuisine.',
     activities: ['Temple visits', 'Sushi making class', 'Shopping in Shibuya', 'Sumo wrestling show', 'Cherry blossom viewing'],
+    phoneNumber: '+81 3-5321-8111',
+    email: 'contact@tokyoexperience.jp',
+    address: '1-1-3 Shinjuku, Shinjuku-ku, Tokyo 160-0022, Japan',
+    googleMapsUrl: 'https://maps.google.com/?q=35.689487,139.691711',
+    openingHours: '24/7 - Reception available all day',
+    suitableFor: ['Solo travelers', 'Couples', 'Culture enthusiasts'],
+    nearbyAttractions: ['Senso-ji Temple (5 km)', 'Tokyo Skytree (8 km)', 'Shibuya Crossing (3 km)'],
+    priceBreakdown: {'Accommodation': 100, 'Food & Drinks': 35, 'Transport': 15},
+    facilities: ['Free WiFi', 'Restaurant', 'Bar', 'Gym', 'Concierge', '24/7 Front Desk'],
   ),
   Destination(
     id: '4',
-    name: 'Machu Picchu Trek',
+    name: 'Machu Picchu Adventure Base',
     city: 'Cusco',
     country: 'Peru',
     categories: ['Mountain', 'Culture', 'Adventure'],
@@ -118,10 +167,19 @@ final List<Destination> allDestinations = [
     avgCost: 100,
     description: 'Discover the ancient Inca citadel of Machu Picchu, one of the New Seven Wonders of the World. A breathtaking journey through history and stunning landscapes.',
     activities: ['Inca Trail hiking', 'Ruins exploration', 'Local market visits', 'Traditional cuisine tasting', 'Llama encounters'],
+    phoneNumber: '+51 84 211234',
+    email: 'tours@machupicchu-adventure.pe',
+    address: 'Av. El Sol 106, Cusco 08002, Peru',
+    googleMapsUrl: 'https://maps.google.com/?q=-13.163141,-72.545128',
+    openingHours: '6 AM - 5:30 PM (Last entry 3 PM)',
+    suitableFor: ['Adventure seekers', 'History buffs', 'Photographers'],
+    nearbyAttractions: ['Sacred Valley (20 km)', 'Cusco Historic Center (75 km)', 'Rainbow Mountain (100 km)'],
+    priceBreakdown: {'Accommodation': 40, 'Food': 25, 'Tour Guide': 35},
+    facilities: ['Tour Guide', 'Transport', 'Restaurant', 'WiFi', 'Luggage Storage'],
   ),
   Destination(
     id: '5',
-    name: 'Maldives Luxury Resort',
+    name: 'Maldives Luxury Beach Resort',
     city: 'Malé',
     country: 'Maldives',
     categories: ['Beach'],
@@ -131,10 +189,19 @@ final List<Destination> allDestinations = [
     avgCost: 300,
     description: 'The Maldives offers pristine white sand beaches, crystal-clear turquoise waters, and luxurious overwater bungalows. The ultimate tropical paradise for relaxation.',
     activities: ['Snorkeling', 'Scuba diving', 'Spa treatments', 'Sunset cruises', 'Private beach dining'],
+    phoneNumber: '+960 664-0011',
+    email: 'luxury@maldivesresort.mv',
+    address: 'Medhufushi Island, Meemu Atoll, Maldives',
+    googleMapsUrl: 'https://maps.google.com/?q=3.202778,73.220680',
+    openingHours: '24/7 - All-inclusive resort',
+    suitableFor: ['Couples', 'Honeymooners', 'Luxury travelers'],
+    nearbyAttractions: ['Male City (45 km)', 'Banana Reef (30 km)', 'HP Reef (25 km)'],
+    priceBreakdown: {'Overwater Villa': 250, 'All-inclusive meals': 30, 'Activities': 20},
+    facilities: ['Private Pool', 'Spa', 'Fine Dining', 'Water Sports', 'Butler Service', 'WiFi'],
   ),
   Destination(
     id: '6',
-    name: 'Paris Romance',
+    name: 'Paris Boutique Hotel',
     city: 'Paris',
     country: 'France',
     categories: ['City', 'Culture', 'Food'],
@@ -144,10 +211,19 @@ final List<Destination> allDestinations = [
     avgCost: 180,
     description: 'The City of Light enchants visitors with its iconic landmarks, world-class museums, and exquisite cuisine. Experience art, history, and romance in every corner.',
     activities: ['Eiffel Tower visit', 'Louvre Museum tour', 'Seine River cruise', 'French pastry tasting', 'Montmartre exploration'],
+    phoneNumber: '+33 1 42 60 34 56',
+    email: 'bonjour@parisboutique.fr',
+    address: '12 Rue de Rivoli, 75004 Paris, France',
+    googleMapsUrl: 'https://maps.google.com/?q=48.856613,2.352222',
+    openingHours: '24/7 - Check-in: 3 PM, Check-out: 11 AM',
+    suitableFor: ['Couples', 'Art lovers', 'Foodies'],
+    nearbyAttractions: ['Eiffel Tower (3 km)', 'Louvre Museum (1 km)', 'Notre-Dame (800 m)'],
+    priceBreakdown: {'Accommodation': 120, 'Food & Wine': 40, 'Museum tickets': 20},
+    facilities: ['WiFi', 'Breakfast', 'Bar', 'Concierge', 'Room Service', 'City View'],
   ),
   Destination(
     id: '7',
-    name: 'Safari in Serengeti',
+    name: 'Serengeti Safari Lodge',
     city: 'Arusha',
     country: 'Tanzania',
     categories: ['Adventure', 'Culture'],
@@ -157,10 +233,19 @@ final List<Destination> allDestinations = [
     avgCost: 200,
     description: 'Witness the Great Migration and experience incredible wildlife encounters in the vast plains of the Serengeti. An unforgettable African safari adventure.',
     activities: ['Game drives', 'Hot air balloon safari', 'Maasai village visit', 'Wildlife photography', 'Camping under the stars'],
+    phoneNumber: '+255 27 254 4595',
+    email: 'safari@serengeti-lodge.tz',
+    address: 'Seronera, Serengeti National Park, Tanzania',
+    googleMapsUrl: 'https://maps.google.com/?q=-2.333333,34.833333',
+    openingHours: '24/7 - Safari tours: 6 AM - 6 PM',
+    suitableFor: ['Adventure seekers', 'Families', 'Wildlife enthusiasts'],
+    nearbyAttractions: ['Ngorongoro Crater (140 km)', 'Olduvai Gorge (90 km)', 'Lake Victoria (200 km)'],
+    priceBreakdown: {'Lodge': 120, 'Safari tours': 60, 'Meals': 20},
+    facilities: ['Game Drive', 'Restaurant', 'Bar', 'Pool', 'WiFi', 'Safari Guide'],
   ),
   Destination(
     id: '8',
-    name: 'Bangkok Street Food',
+    name: 'Bangkok Street Food Hotel',
     city: 'Bangkok',
     country: 'Thailand',
     categories: ['City', 'Food', 'Culture'],
@@ -170,10 +255,19 @@ final List<Destination> allDestinations = [
     avgCost: 50,
     description: 'Bangkok is a food lover\'s paradise with incredible street food, ornate temples, and bustling markets. Experience authentic Thai culture and flavors.',
     activities: ['Street food tours', 'Temple hopping', 'Floating market visit', 'Thai cooking class', 'Traditional Thai massage'],
+    phoneNumber: '+66 2 234 5678',
+    email: 'hello@bangkokstreetfood.th',
+    address: '123 Sukhumvit Soi 11, Khlong Toei Nuea, Bangkok 10110, Thailand',
+    googleMapsUrl: 'https://maps.google.com/?q=13.756331,100.501762',
+    openingHours: '24/7 - Tours available 8 AM - 10 PM',
+    suitableFor: ['Foodies', 'Solo travelers', 'Budget travelers'],
+    nearbyAttractions: ['Grand Palace (5 km)', 'Wat Pho (6 km)', 'Chatuchak Market (10 km)'],
+    priceBreakdown: {'Accommodation': 25, 'Street food': 15, 'Transport': 10},
+    facilities: ['WiFi', 'Rooftop Bar', 'Tour Desk', 'Laundry', '24/7 Reception'],
   ),
   Destination(
     id: '9',
-    name: 'New York City',
+    name: 'New York Manhattan Hotel',
     city: 'New York',
     country: 'USA',
     categories: ['City', 'Culture'],
@@ -183,10 +277,19 @@ final List<Destination> allDestinations = [
     avgCost: 250,
     description: 'The Big Apple offers endless entertainment, world-famous landmarks, Broadway shows, and diverse culinary experiences. The city that never sleeps awaits.',
     activities: ['Statue of Liberty tour', 'Broadway show', 'Central Park stroll', 'Museum visits', 'Times Square exploration'],
+    phoneNumber: '+1 212-555-0199',
+    email: 'reservations@nymanhattan.com',
+    address: '350 5th Avenue, New York, NY 10118, USA',
+    googleMapsUrl: 'https://maps.google.com/?q=40.748817,-73.985428',
+    openingHours: '24/7 - Check-in: 3 PM, Check-out: 12 PM',
+    suitableFor: ['Culture enthusiasts', 'Families', 'Business travelers'],
+    nearbyAttractions: ['Empire State Building (200 m)', 'Times Square (1 km)', 'Central Park (2 km)'],
+    priceBreakdown: {'Accommodation': 200, 'Food': 30, 'Broadway ticket': 20},
+    facilities: ['WiFi', 'Gym', 'Rooftop Bar', 'Concierge', 'Business Center', 'Restaurant'],
   ),
   Destination(
     id: '10',
-    name: 'Santorini Sunset',
+    name: 'Santorini Caldera View Resort',
     city: 'Santorini',
     country: 'Greece',
     categories: ['Beach', 'Culture'],
@@ -196,6 +299,15 @@ final List<Destination> allDestinations = [
     avgCost: 170,
     description: 'Famous for its stunning sunsets, white-washed buildings, and blue-domed churches. Santorini is a romantic Greek island paradise.',
     activities: ['Sunset watching in Oia', 'Wine tasting', 'Beach hopping', 'Ancient ruins visit', 'Greek cuisine tasting'],
+    phoneNumber: '+30 22860 71234',
+    email: 'info@santorini-caldera.gr',
+    address: 'Oia, Santorini 84702, Greece',
+    googleMapsUrl: 'https://maps.google.com/?q=36.461204,25.375216',
+    openingHours: 'Apr - Oct: 24/7 | Nov - Mar: Limited services',
+    suitableFor: ['Couples', 'Honeymooners', 'Photographers'],
+    nearbyAttractions: ['Red Beach (12 km)', 'Akrotiri Archaeological Site (15 km)', 'Fira Town (10 km)'],
+    priceBreakdown: {'Cave Suite': 120, 'Breakfast': 25, 'Wine tour': 25},
+    facilities: ['Infinity Pool', 'Caldera View', 'Restaurant', 'WiFi', 'Spa', 'Sunset Terrace'],
   ),
 ];
 
@@ -847,6 +959,37 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     );
   }
 
+  Widget _buildContactRow(BuildContext context, IconData icon, String text, VoidCallback? onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(fontSize: 15),
+              ),
+            ),
+            if (onTap != null)
+              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade600),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Đồng bộ favorite state từ global Set
@@ -1056,7 +1199,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            _showSnackBar('Opening map...');
+                            _showSnackBar('Opening Google Maps...\n${widget.destination.googleMapsUrl}');
                           },
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(0, 46),
@@ -1094,6 +1237,289 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       height: 1.5,
                       color: Colors.black87,
                     ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Contact Information Section
+                  Text(
+                    'Contact Information',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildContactRow(
+                          context,
+                          Icons.phone,
+                          widget.destination.phoneNumber,
+                          () => _showSnackBar('Calling ${widget.destination.phoneNumber}...'),
+                        ),
+                        const Divider(height: 24),
+                        _buildContactRow(
+                          context,
+                          Icons.email,
+                          widget.destination.email,
+                          () => _showSnackBar('Opening email...'),
+                        ),
+                        const Divider(height: 24),
+                        _buildContactRow(
+                          context,
+                          Icons.location_on,
+                          widget.destination.address,
+                          () => _showSnackBar('Opening Google Maps...'),
+                        ),
+                        const Divider(height: 24),
+                        _buildContactRow(
+                          context,
+                          Icons.access_time,
+                          widget.destination.openingHours,
+                          null,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Price Breakdown Section
+                  Text(
+                    'Price Breakdown',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        ...widget.destination.priceBreakdown.entries.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  entry.key,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  '\$${entry.value}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Total per day',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '\$${widget.destination.avgCost}',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Suitable For Section
+                  Text(
+                    'Suitable For',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: widget.destination.suitableFor.map((type) {
+                      IconData icon;
+                      switch (type) {
+                        case 'Couples':
+                          icon = Icons.favorite;
+                          break;
+                        case 'Families':
+                          icon = Icons.family_restroom;
+                          break;
+                        case 'Solo travelers':
+                          icon = Icons.person;
+                          break;
+                        case 'Groups':
+                          icon = Icons.groups;
+                          break;
+                        case 'Adventure seekers':
+                          icon = Icons.terrain;
+                          break;
+                        case 'Business travelers':
+                          icon = Icons.business_center;
+                          break;
+                        default:
+                          icon = Icons.check_circle;
+                      }
+                      return Chip(
+                        avatar: Icon(icon, size: 18),
+                        label: Text(type),
+                        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Facilities Section
+                  Text(
+                    'Facilities & Amenities',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 2.5,
+                    children: widget.destination.facilities.map((facility) {
+                      IconData icon;
+                      switch (facility) {
+                        case 'Free WiFi':
+                        case 'WiFi':
+                          icon = Icons.wifi;
+                          break;
+                        case 'Swimming Pool':
+                        case 'Pool':
+                        case 'Infinity Pool':
+                          icon = Icons.pool;
+                          break;
+                        case 'Spa':
+                          icon = Icons.spa;
+                          break;
+                        case 'Restaurant':
+                        case 'Fine Dining':
+                          icon = Icons.restaurant;
+                          break;
+                        case 'Parking':
+                          icon = Icons.local_parking;
+                          break;
+                        case 'Gym':
+                          icon = Icons.fitness_center;
+                          break;
+                        case 'Bar':
+                        case 'Rooftop Bar':
+                          icon = Icons.local_bar;
+                          break;
+                        case 'Beach Access':
+                          icon = Icons.beach_access;
+                          break;
+                        default:
+                          icon = Icons.check_circle_outline;
+                      }
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                facility,
+                                style: const TextStyle(fontSize: 11),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Nearby Attractions Section
+                  Text(
+                    'Nearby Attractions',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: widget.destination.nearbyAttractions.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.blue.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.place,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                widget.destination.nearbyAttractions[index],
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 24),
